@@ -1,24 +1,29 @@
-import React from 'react'
-import logo from './logo.svg'
+import React, { useEffect, useRef } from 'react'
+import mapboxgl from 'mapbox-gl' // eslint-disable-line import/no-webpack-loader-syntax
 import './App.css'
 
-function App() {
+mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_TOKEN!
+
+const App = () => {
+  const mapContainer = useRef<HTMLDivElement>(null)
+  const map = useRef<mapboxgl.Map | null>(null)
+  const lng = -76.48
+  const lat = 42.45
+  const zoom = 14.5
+
+  useEffect(() => {
+    if (map.current || !mapContainer.current) return
+    map.current = new mapboxgl.Map({
+      container: mapContainer.current,
+      style: 'mapbox://styles/mapbox/streets-v11',
+      center: [lng, lat],
+      zoom: zoom,
+    })
+  })
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <div ref={mapContainer} style={{ height: '100%' }}></div>
     </div>
   )
 }
