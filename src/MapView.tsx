@@ -56,13 +56,13 @@ export const MapView = () => {
           <p>
             <Typography>
               Welcome to Campus Mapper! Explore campus to its full potential by
-              using this website as a visual checklist for where you've been.{' '}
+              using this website as a visual checklist for where you've been.
             </Typography>
           </p>
         </div>
         <Map
           className={classes.map}
-          style="mapbox://styles/mapbox/streets-v11" // eslint-disable-line react/style-prop-object
+          style="mapbox://styles/coreball/cks2mne9b30gp17mwigqj96c7" // eslint-disable-line react/style-prop-object
           center={[-76.48, 42.45]}
           zoom={[14.5]}
         >
