@@ -31,18 +31,7 @@ const Map = ReactMapboxGl({
 
 export const MapView = () => {
   const classes = useStyles()
-  const sampleLocations: Location[] = require('./sample-locations.json')
-
-  const toGeoJson = (location: Location) => ({
-    type: 'geojson',
-    data: {
-      type: 'Feature',
-      geometry: {
-        type: 'Polygon',
-        coordinates: location.coordinates,
-      },
-    },
-  })
+  const sampleLocations: Location[] = require('./cornell-north.json')
 
   return (
     <div className={classes.root}>
@@ -68,14 +57,17 @@ export const MapView = () => {
         >
           {sampleLocations.map(location => (
             <>
-              <Source id={location.id} geoJsonSource={toGeoJson(location)} />
+              <Source
+                id={location.id}
+                geoJsonSource={{ type: 'geojson', data: location.geoJson }}
+              />
               <Layer
                 id={`${location.id}-fill`}
                 type="fill"
                 sourceId={location.id}
                 onClick={() => console.log(location.id)}
                 paint={{
-                  'fill-color': '#0080ff',
+                  'fill-color': '#fff',
                   'fill-opacity': 0.5,
                 }}
               />

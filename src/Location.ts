@@ -1,7 +1,7 @@
-type Coordinate = [number, number]
+import { Feature } from 'geojson'
 
 export interface Location {
   id: string
   name: string
-  coordinates: Coordinate[]
+  geoJson: Feature
 }
