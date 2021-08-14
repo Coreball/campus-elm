@@ -27,11 +27,12 @@ const useStyles = makeStyles((theme: Theme) =>
 const Map = ReactMapboxGl({
   accessToken: process.env.REACT_APP_MAPBOX_TOKEN!,
   hash: true,
+  attributionControl: false,
 })
 
 export const MapView = () => {
   const classes = useStyles()
-  const sampleLocations: Location[] = require('./cornell-north.json')
+  const sampleLocations: Location[] = require('./sample-locations.json')
 
   return (
     <div className={classes.root}>
@@ -42,12 +43,10 @@ export const MapView = () => {
       </header>
       <div className={classes.main}>
         <div className={classes.sidebar}>
-          <p>
-            <Typography>
-              Welcome to Campus Mapper! Explore campus to its full potential by
-              using this website as a visual checklist for where you've been.
-            </Typography>
-          </p>
+          <Typography>
+            Welcome to Campus Mapper! Explore campus to its full potential by
+            using this website as a visual checklist for where you've been.
+          </Typography>
         </div>
         <Map
           className={classes.map}
