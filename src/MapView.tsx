@@ -1,7 +1,8 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import ReactMapboxGl, { Layer, Source } from 'react-mapbox-gl'
 import { createStyles, makeStyles, Theme, Typography } from '@material-ui/core'
 import { Location } from './Location'
+import { getLocations } from './firebase'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -32,7 +33,12 @@ const Map = ReactMapboxGl({
 
 export const MapView = () => {
   const classes = useStyles()
-  const sampleLocations: Location[] = require('./sample-locations.json')
+  const campus = 'cornell'
+
+  const [locations, setLocations] = useState<Location[]>([])
+  useEffect(() => {
+    getLocations(campus).then(locations => setLocations(locations))
+  }, [campus])
 
   return (
     <div className={classes.root}>
@@ -54,7 +60,7 @@ export const MapView = () => {
           center={[-76.48, 42.45]}
           zoom={[14.5]}
         >
-          {sampleLocations.map(location => (
+          {locations.map(location => (
             <>
               <Source
                 id={location.id}
