@@ -39,6 +39,12 @@ export const MapView = () => {
   useEffect(() => {
     getLocations(campus).then(locations => setLocations(locations))
   }, [campus])
+  // const locations: Location[] = require('./sample-locations.json')
+
+  const unvisitedCollection = {
+    type: 'FeatureCollection',
+    features: locations.map(location => location.geoJson),
+  }
 
   return (
     <div className={classes.root}>
@@ -60,24 +66,19 @@ export const MapView = () => {
           center={[-76.48, 42.45]}
           zoom={[14.5]}
         >
-          {locations.map(location => (
-            <>
-              <Source
-                id={location.id}
-                geoJsonSource={{ type: 'geojson', data: location.geoJson }}
-              />
-              <Layer
-                id={`${location.id}-fill`}
-                type="fill"
-                sourceId={location.id}
-                onClick={() => console.log(location.id)}
-                paint={{
-                  'fill-color': '#fff',
-                  'fill-opacity': 0.5,
-                }}
-              />
-            </>
-          ))}
+          <Source
+            id="unvisited"
+            geoJsonSource={{ type: 'geojson', data: unvisitedCollection }}
+          />
+          <Layer
+            id="unvisited-fill"
+            type="fill"
+            sourceId="unvisited"
+            paint={{
+              'fill-color': '#fff',
+              'fill-opacity': 0.5,
+            }}
+          />
         </Map>
       </div>
     </div>
