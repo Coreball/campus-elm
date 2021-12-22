@@ -1,38 +1,19 @@
 import React, { useEffect, useState } from 'react'
 import ReactMapboxGl, { Layer, Source } from 'react-mapbox-gl'
-import { createStyles, makeStyles, Theme, Typography } from '@material-ui/core'
+import { styled } from '@mui/system'
+import { Box, Typography } from '@mui/material'
 import { Location } from './Location'
 import { getLocations } from './firebase'
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      display: 'flex',
-      flexDirection: 'column',
-      height: '100vh',
-      marginLeft: '1%',
-    },
-    main: {
-      display: 'flex',
-      flexGrow: 1,
-    },
-    map: {
-      width: '77.5%',
-    },
-    sidebar: {
-      width: '22.5%',
-    },
+const Map = styled(
+  ReactMapboxGl({
+    accessToken: process.env.REACT_APP_MAPBOX_TOKEN!,
+    hash: true,
+    attributionControl: false,
   })
-)
-
-const Map = ReactMapboxGl({
-  accessToken: process.env.REACT_APP_MAPBOX_TOKEN!,
-  hash: true,
-  attributionControl: false,
-})
+)()
 
 export const MapView = () => {
-  const classes = useStyles()
   const campus = 'cornell'
 
   const [locations, setLocations] = useState<Location[]>([])
@@ -47,21 +28,28 @@ export const MapView = () => {
   }
 
   return (
-    <div className={classes.root}>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100vh',
+        marginLeft: '1%',
+      }}
+    >
       <header>
         <Typography variant="h6" component="h1">
           Campus Mapper
         </Typography>
       </header>
-      <div className={classes.main}>
-        <div className={classes.sidebar}>
+      <Box sx={{ display: 'flex', flexGrow: 1 }}>
+        <Box sx={{ width: '22.5%' }}>
           <Typography>
             Welcome to Campus Mapper! Explore campus to its full potential by
             using this website as a visual checklist for where you've been.
           </Typography>
-        </div>
+        </Box>
         <Map
-          className={classes.map}
+          sx={{ width: '77.5%' }}
           style="mapbox://styles/coreball/cks2mne9b30gp17mwigqj96c7" // eslint-disable-line react/style-prop-object
           center={[-76.48, 42.45]}
           zoom={[14.5]}
@@ -80,7 +68,7 @@ export const MapView = () => {
             }}
           />
         </Map>
-      </div>
-    </div>
+      </Box>
+    </Box>
   )
 }

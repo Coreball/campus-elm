@@ -1,5 +1,5 @@
 import React from 'react'
-import { createTheme, ThemeProvider } from '@material-ui/core'
+import { createTheme, ThemeProvider } from '@mui/material/styles'
 import { MapView } from './MapView'
 
 const theme = createTheme({
