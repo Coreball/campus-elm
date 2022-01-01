@@ -22,9 +22,26 @@ export const MapView = () => {
   }, [campus])
   // const locations: Location[] = require('./sample-locations.json')
 
+  const [selectedLocation, setSelectedLocation] = useState<Location | null>(
+    null
+  )
+
   const unvisitedCollection = {
     type: 'FeatureCollection',
-    features: locations.map(location => location.geoJson),
+    features: locations.map(location => ({
+      ...location.geoJson,
+      properties: { id: location.id }, // To identify Location later
+    })),
+  }
+
+  const queryForLocation = (map: mapboxgl.Map, point: mapboxgl.PointLike) => {
+    // First 'id' property in array of selected features is the id of the Location
+    const id: string | undefined = map
+      .queryRenderedFeatures(point)
+      .find(
+        feature => feature.properties && feature.properties.id !== undefined
+      )?.properties!.id
+    return locations.find(location => location.id === id) ?? null
   }
 
   return (
@@ -53,6 +70,9 @@ export const MapView = () => {
           style="mapbox://styles/coreball/cks2mne9b30gp17mwigqj96c7" // eslint-disable-line react/style-prop-object
           center={[-76.48, 42.45]}
           zoom={[14.5]}
+          onClick={(map, event: any) => {
+            setSelectedLocation(queryForLocation(map, event.point))
+          }}
         >
           <Source
             id="unvisited"
