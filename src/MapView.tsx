@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import ReactMapboxGl, { Layer, Source } from 'react-mapbox-gl'
 import { styled } from '@mui/system'
 import { Box, Typography } from '@mui/material'
+import { User } from 'firebase/auth'
 import { Location } from './Location'
 import { getLocations } from './firebase'
 
@@ -13,7 +14,11 @@ const Map = styled(
   })
 )()
 
-export const MapView = () => {
+interface MapViewProps {
+  user: User | null
+}
+
+export const MapView = ({ user }: MapViewProps) => {
   const campus = 'cornell'
 
   const [locations, setLocations] = useState<Location[]>([])
@@ -57,6 +62,13 @@ export const MapView = () => {
         <Typography variant="h6" component="h1">
           Campus Mapper
         </Typography>
+        <span>
+          {user
+            ? user.isAnonymous
+              ? user.uid
+              : user.displayName
+            : 'LOGGED OUT'}
+        </span>
       </header>
       <Box sx={{ display: 'flex', flexGrow: 1 }}>
         <Box sx={{ width: '22.5%' }}>
