@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import { createTheme, ThemeProvider } from '@mui/material/styles'
+import { colors } from '@mui/material'
 import { onAuthStateChanged, signInAnonymously, User } from 'firebase/auth'
 import { auth } from './firebase'
 import { MapView } from './MapView'
 
 const theme = createTheme({
   palette: {
-    primary: {
-      main: '#fff',
-    },
+    primary: colors.red,
   },
 })
 

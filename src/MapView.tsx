@@ -1,10 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react'
 import ReactMapboxGl, { Layer, Source } from 'react-mapbox-gl'
 import { styled } from '@mui/system'
-import { Box, Typography } from '@mui/material'
+import { Box, Checkbox, FormControlLabel, Typography } from '@mui/material'
 import { User } from 'firebase/auth'
-import { Location } from './Location'
 import { getLocations } from './firebase'
+import { Location } from './Location'
+import { Visited } from './Visited'
 
 const Map = styled(
   ReactMapboxGl({
@@ -35,6 +36,24 @@ export const MapView = ({ user }: MapViewProps) => {
     null
   )
 
+  const [visited, setVisited] = useState<Visited[]>([])
+
+  const isVisited = (id: string) => {
+    return visited.some(visit => visit.id === id)
+  }
+
+  const timestampVisited = (id: string) => {
+    return visited.find(visit => visit.id === id)!.timestamp
+  }
+
+  const updateVisited = (id: string, checked: boolean) => {
+    if (checked) {
+      setVisited([...visited, { id, timestamp: new Date() }])
+    } else {
+      setVisited(visited.filter(visit => visit.id !== id))
+    }
+  }
+
   const unvisitedCollection = {
     type: 'FeatureCollection',
     features: locations.map(location => ({
@@ -53,10 +72,10 @@ export const MapView = ({ user }: MapViewProps) => {
     return locations.find(location => location.id === id) ?? null
   }
 
-  const mapHandleClick = (map: mapboxgl.Map, event: any) =>
+  const handleMapClick = (map: mapboxgl.Map, event: any) =>
     setSelectedLocation(queryForLocation(map, event.point))
-  const mapHandleClickRef = useRef(mapHandleClick)
-  mapHandleClickRef.current = mapHandleClick // Update reference on every render
+  const handleMapClickRef = useRef(handleMapClick)
+  handleMapClickRef.current = handleMapClick // Update reference on every render
 
   return (
     <Box
@@ -81,14 +100,37 @@ export const MapView = ({ user }: MapViewProps) => {
       </header>
       <Box sx={{ display: 'flex', flexGrow: 1 }}>
         <Box sx={{ width: '22.5%' }}>
-          {selectedLocation ? <p>{selectedLocation.id}</p> : <p>{campus}</p>}
+          {selectedLocation ? (
+            <>
+              <Typography>{selectedLocation.name}</Typography>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={isVisited(selectedLocation.id)}
+                    onChange={(event, checked) =>
+                      updateVisited(selectedLocation.id, checked)
+                    }
+                  />
+                }
+                label={
+                  isVisited(selectedLocation.id)
+                    ? `Visited on ${timestampVisited(
+                        selectedLocation.id
+                      ).toLocaleDateString()}`
+                    : 'Mark Visited'
+                }
+              />
+            </>
+          ) : (
+            <Typography>{campus}</Typography>
+          )}
         </Box>
         <Map
           sx={{ width: '77.5%' }}
           style="mapbox://styles/coreball/cks2mne9b30gp17mwigqj96c7" // eslint-disable-line react/style-prop-object
           center={center}
           zoom={zoom}
-          onClick={(map, event: any) => mapHandleClickRef.current(map, event)}
+          onClick={(map, event: any) => handleMapClickRef.current(map, event)}
         >
           <Source
             id="unvisited"
