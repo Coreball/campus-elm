@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import ReactMapboxGl, { Layer, Source } from 'react-mapbox-gl'
 import { styled } from '@mui/system'
 import { Box, Typography } from '@mui/material'
@@ -19,6 +19,10 @@ interface MapViewProps {
 }
 
 export const MapView = ({ user }: MapViewProps) => {
+  // Reference the same arrays to prevent re-centering on mapHandleClickRef update
+  const [center] = useState<[number, number]>([-76.48, 42.45])
+  const [zoom] = useState<[number]>([14.5])
+
   const campus = 'cornell'
 
   const [locations, setLocations] = useState<Location[]>([])
@@ -49,6 +53,11 @@ export const MapView = ({ user }: MapViewProps) => {
     return locations.find(location => location.id === id) ?? null
   }
 
+  const mapHandleClick = (map: mapboxgl.Map, event: any) =>
+    setSelectedLocation(queryForLocation(map, event.point))
+  const mapHandleClickRef = useRef(mapHandleClick)
+  mapHandleClickRef.current = mapHandleClick // Update reference on every render
+
   return (
     <Box
       sx={{
@@ -72,19 +81,14 @@ export const MapView = ({ user }: MapViewProps) => {
       </header>
       <Box sx={{ display: 'flex', flexGrow: 1 }}>
         <Box sx={{ width: '22.5%' }}>
-          <Typography>
-            Welcome to Campus Mapper! Explore campus to its full potential by
-            using this website as a visual checklist for where you've been.
-          </Typography>
+          {selectedLocation ? <p>{selectedLocation.id}</p> : <p>{campus}</p>}
         </Box>
         <Map
           sx={{ width: '77.5%' }}
           style="mapbox://styles/coreball/cks2mne9b30gp17mwigqj96c7" // eslint-disable-line react/style-prop-object
-          center={[-76.48, 42.45]}
-          zoom={[14.5]}
-          onClick={(map, event: any) => {
-            setSelectedLocation(queryForLocation(map, event.point))
-          }}
+          center={center}
+          zoom={zoom}
+          onClick={(map, event: any) => mapHandleClickRef.current(map, event)}
         >
           <Source
             id="unvisited"
