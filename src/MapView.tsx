@@ -12,6 +12,7 @@ const Map = styled(
     accessToken: process.env.REACT_APP_MAPBOX_TOKEN!,
     hash: true,
     attributionControl: false,
+    antialias: true,
   })
 )()
 
@@ -56,10 +57,22 @@ export const MapView = ({ user }: MapViewProps) => {
 
   const unvisitedCollection = {
     type: 'FeatureCollection',
-    features: locations.map(location => ({
-      ...location.geoJson,
-      properties: { id: location.id }, // To identify Location later
-    })),
+    features: locations
+      .filter(location => !isVisited(location.id))
+      .map(location => ({
+        ...location.geoJson,
+        properties: { id: location.id }, // To identify Location later
+      })),
+  }
+
+  const visitedCollection = {
+    type: 'FeatureCollection',
+    features: locations
+      .filter(location => isVisited(location.id))
+      .map(location => ({
+        ...location.geoJson,
+        properties: { id: location.id }, // To identify Location later
+      })),
   }
 
   const queryForLocation = (map: mapboxgl.Map, point: mapboxgl.PointLike) => {
@@ -142,6 +155,19 @@ export const MapView = ({ user }: MapViewProps) => {
             sourceId="unvisited"
             paint={{
               'fill-color': '#fff',
+              'fill-opacity': 0.5,
+            }}
+          />
+          <Source
+            id="visited"
+            geoJsonSource={{ type: 'geojson', data: visitedCollection }}
+          />
+          <Layer
+            id="visited-fill"
+            type="fill"
+            sourceId="visited"
+            paint={{
+              'fill-color': '#000',
               'fill-opacity': 0.5,
             }}
           />
