@@ -7,6 +7,7 @@ import {
   doc,
   serverTimestamp,
   setDoc,
+  getDoc,
 } from 'firebase/firestore'
 import { Location } from '../Location'
 import { Visited } from '../Visited'
@@ -27,6 +28,22 @@ export const getLocations = async (campus: string): Promise<Location[]> => {
       ...location,
       geoJson: JSON.parse(location.geoJson),
     })) as Location[]
+}
+
+export const getUserVisited = async (
+  uid: string,
+  campus: string
+): Promise<Visited[]> => {
+  const userDoc = doc(db, 'users', uid)
+  const userSnapshot = await getDoc(userDoc)
+  if (userSnapshot.exists()) {
+    return userSnapshot.data().visited[campus].map((visited: any) => ({
+      ...visited,
+      timestamp: visited.timestamp.toDate(),
+    }))
+  } else {
+    return []
+  }
 }
 
 export const setUserVisited = async (

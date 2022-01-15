@@ -3,7 +3,7 @@ import ReactMapboxGl, { Layer, Source } from 'react-mapbox-gl'
 import { styled } from '@mui/system'
 import { Box, Checkbox, FormControlLabel, Typography } from '@mui/material'
 import { User } from 'firebase/auth'
-import { getLocations, setUserVisited } from './firebase'
+import { getLocations, getUserVisited, setUserVisited } from './firebase'
 import { Location } from './Location'
 import { Visited } from './Visited'
 
@@ -33,11 +33,18 @@ export const MapView = ({ user }: MapViewProps) => {
   }, [campus])
   // const locations: Location[] = require('./sample-locations.json')
 
+  const [visited, setVisited] = useState<Visited[]>([])
+  useEffect(() => {
+    if (user) {
+      getUserVisited(user.uid, campus).then(visited => setVisited(visited))
+    } else {
+      setVisited([])
+    }
+  }, [user, campus])
+
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(
     null
   )
-
-  const [visited, setVisited] = useState<Visited[]>([])
 
   const isVisited = (id: string) => {
     return visited.some(visit => visit.id === id)
