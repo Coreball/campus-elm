@@ -1,7 +1,15 @@
 import { initializeApp } from 'firebase/app'
 import { getAuth } from 'firebase/auth'
-import { getFirestore, collection, getDocs } from 'firebase/firestore'
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  doc,
+  serverTimestamp,
+  setDoc,
+} from 'firebase/firestore'
 import { Location } from '../Location'
+import { Visited } from '../Visited'
 
 import firebaseConfig from './firebase.json'
 
@@ -19,4 +27,22 @@ export const getLocations = async (campus: string): Promise<Location[]> => {
       ...location,
       geoJson: JSON.parse(location.geoJson),
     })) as Location[]
+}
+
+export const setUserVisited = async (
+  uid: string,
+  campus: string,
+  visited: Visited[]
+) => {
+  const userDoc = doc(db, 'users', uid)
+  return setDoc(
+    userDoc,
+    {
+      visited: {
+        [campus]: visited,
+      },
+      updated: serverTimestamp(),
+    },
+    { merge: true }
+  )
 }

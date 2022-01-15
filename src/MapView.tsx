@@ -3,7 +3,7 @@ import ReactMapboxGl, { Layer, Source } from 'react-mapbox-gl'
 import { styled } from '@mui/system'
 import { Box, Checkbox, FormControlLabel, Typography } from '@mui/material'
 import { User } from 'firebase/auth'
-import { getLocations } from './firebase'
+import { getLocations, setUserVisited } from './firebase'
 import { Location } from './Location'
 import { Visited } from './Visited'
 
@@ -48,10 +48,12 @@ export const MapView = ({ user }: MapViewProps) => {
   }
 
   const updateVisited = (id: string, checked: boolean) => {
-    if (checked) {
-      setVisited([...visited, { id, timestamp: new Date() }])
-    } else {
-      setVisited(visited.filter(visit => visit.id !== id))
+    const newVisited = checked
+      ? [...visited, { id, timestamp: new Date() }]
+      : visited.filter(visit => visit.id !== id)
+    setVisited(newVisited)
+    if (user) {
+      setUserVisited(user.uid, campus, newVisited)
     }
   }
 
