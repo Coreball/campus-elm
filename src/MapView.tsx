@@ -25,6 +25,7 @@ const Map = styled(
     accessToken: process.env.REACT_APP_MAPBOX_TOKEN!,
     attributionControl: false,
     antialias: true,
+    doubleClickZoom: false,
   })
 )()
 
@@ -134,7 +135,7 @@ export const MapView = ({ user }: MapViewProps) => {
       sx={{
         display: 'flex',
         flexDirection: 'column',
-        height: '100vh',
+        height: window.innerHeight,
       }}
     >
       <Toolbar>
@@ -157,7 +158,7 @@ export const MapView = ({ user }: MapViewProps) => {
         sx={{
           display: 'flex',
           flexGrow: 1,
-          flexDirection: { xs: 'column', sm: 'row' },
+          flexDirection: { xs: 'column-reverse', sm: 'row' },
         }}
       >
         <Box sx={{ width: 300, ml: 3, mr: 3 }}>
