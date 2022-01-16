@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import ReactMapboxGl, { Layer, Source } from 'react-mapbox-gl'
-import { styled } from '@mui/system'
+import { styled, useTheme } from '@mui/system'
 import {
   Box,
   Button,
@@ -33,6 +33,8 @@ interface MapViewProps {
 }
 
 export const MapView = ({ user }: MapViewProps) => {
+  const theme = useTheme()
+
   // Reference the same arrays to prevent re-centering on mapHandleClickRef update
   const [center] = useState<[number, number]>([-76.48, 42.45])
   const [zoom] = useState<[number]>([14.5])
@@ -96,6 +98,16 @@ export const MapView = ({ user }: MapViewProps) => {
     type: 'FeatureCollection',
     features: locations
       .filter(location => isVisited(location.id))
+      .map(location => ({
+        ...location.geoJson,
+        properties: { id: location.id }, // To identify Location later
+      })),
+  }
+
+  const selectedCollection = {
+    type: 'FeatureCollection',
+    features: locations
+      .filter(location => location === selectedLocation)
       .map(location => ({
         ...location.geoJson,
         properties: { id: location.id }, // To identify Location later
@@ -217,6 +229,19 @@ export const MapView = ({ user }: MapViewProps) => {
             paint={{
               'fill-color': '#000',
               'fill-opacity': 0.5,
+            }}
+          />
+          <Source
+            id="selected"
+            geoJsonSource={{ type: 'geojson', data: selectedCollection }}
+          />
+          <Layer
+            id="selected-fill"
+            type="fill"
+            sourceId="selected"
+            paint={{
+              'fill-color': theme.palette.primary.main,
+              'fill-opacity': 0.75,
             }}
           />
         </Map>
