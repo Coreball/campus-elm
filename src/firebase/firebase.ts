@@ -1,5 +1,10 @@
 import { initializeApp } from 'firebase/app'
-import { getAuth } from 'firebase/auth'
+import {
+  getAuth,
+  GoogleAuthProvider,
+  signInWithPopup,
+  signOut,
+} from 'firebase/auth'
 import {
   getFirestore,
   collection,
@@ -29,6 +34,12 @@ export const getLocations = async (campus: string): Promise<Location[]> => {
       geoJson: JSON.parse(location.geoJson),
     })) as Location[]
 }
+
+const googleProvider = new GoogleAuthProvider()
+export const signInWithGooglePopup = async () =>
+  signInWithPopup(auth, googleProvider).catch(error => console.error(error))
+
+export const signOutUser = async () => signOut(auth)
 
 export const getUserVisited = async (
   uid: string,

@@ -1,16 +1,28 @@
 import React, { useEffect, useRef, useState } from 'react'
 import ReactMapboxGl, { Layer, Source } from 'react-mapbox-gl'
 import { styled } from '@mui/system'
-import { Box, Checkbox, FormControlLabel, Typography } from '@mui/material'
+import {
+  Box,
+  Button,
+  Checkbox,
+  FormControlLabel,
+  Toolbar,
+  Typography,
+} from '@mui/material'
 import { User } from 'firebase/auth'
-import { getLocations, getUserVisited, setUserVisited } from './firebase'
+import {
+  getLocations,
+  getUserVisited,
+  setUserVisited,
+  signInWithGooglePopup,
+  signOutUser,
+} from './firebase'
 import { Location } from './Location'
 import { Visited } from './Visited'
 
 const Map = styled(
   ReactMapboxGl({
     accessToken: process.env.REACT_APP_MAPBOX_TOKEN!,
-    hash: true,
     attributionControl: false,
     antialias: true,
   })
@@ -105,23 +117,32 @@ export const MapView = ({ user }: MapViewProps) => {
         display: 'flex',
         flexDirection: 'column',
         height: '100vh',
-        marginLeft: '1%',
       }}
     >
-      <header>
-        <Typography variant="h6" component="h1">
-          Campus Mapper
+      <Toolbar>
+        <Typography variant="h6" component="h1" sx={{ marginRight: 3 }}>
+          Campus Elm
         </Typography>
-        <span>
-          {user
-            ? user.isAnonymous
-              ? user.uid
-              : user.displayName
-            : 'LOGGED OUT'}
-        </span>
-      </header>
-      <Box sx={{ display: 'flex', flexGrow: 1 }}>
-        <Box sx={{ width: '22.5%' }}>
+        <Box sx={{ flexGrow: 1, display: 'flex', gap: 1 }}>
+          <Button>{campus}</Button>
+          {user && <Button>{user.displayName}</Button>}
+        </Box>
+        {user ? (
+          <Button onClick={signOutUser}>Sign Out</Button>
+        ) : (
+          <Button variant="outlined" onClick={signInWithGooglePopup}>
+            Sign In
+          </Button>
+        )}
+      </Toolbar>
+      <Box
+        sx={{
+          display: 'flex',
+          flexGrow: 1,
+          flexDirection: { xs: 'column', sm: 'row' },
+        }}
+      >
+        <Box sx={{ width: 300 }}>
           {selectedLocation ? (
             <>
               <Typography>{selectedLocation.name}</Typography>
@@ -148,7 +169,7 @@ export const MapView = ({ user }: MapViewProps) => {
           )}
         </Box>
         <Map
-          sx={{ width: '77.5%' }}
+          sx={{ flexGrow: 1 }}
           style="mapbox://styles/coreball/cks2mne9b30gp17mwigqj96c7" // eslint-disable-line react/style-prop-object
           center={center}
           zoom={zoom}
