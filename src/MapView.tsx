@@ -66,6 +66,12 @@ export const MapView = ({ user }: MapViewProps) => {
     return visited.find(visit => visit.id === id)!.timestamp
   }
 
+  const labelVisited = (id: string) => {
+    return isVisited(id)
+      ? `Visited on ${timestampVisited(id).toLocaleDateString()}`
+      : 'Mark Visited'
+  }
+
   const updateVisited = (id: string, checked: boolean) => {
     const newVisited = checked
       ? [...visited, { id, timestamp: new Date() }]
@@ -142,27 +148,39 @@ export const MapView = ({ user }: MapViewProps) => {
           flexDirection: { xs: 'column', sm: 'row' },
         }}
       >
-        <Box sx={{ width: 300 }}>
+        <Box sx={{ width: 300, ml: 3, mr: 3 }}>
           {selectedLocation ? (
             <>
-              <Typography>{selectedLocation.name}</Typography>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={isVisited(selectedLocation.id)}
-                    onChange={(event, checked) =>
-                      updateVisited(selectedLocation.id, checked)
+              <Box>
+                <Typography>{selectedLocation.name}</Typography>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={isVisited(selectedLocation.id)}
+                      onChange={(event, checked) =>
+                        updateVisited(selectedLocation.id, checked)
+                      }
+                    />
+                  }
+                  label={labelVisited(selectedLocation.id)}
+                />
+              </Box>
+              {selectedLocation.sublocations?.map(sublocation => (
+                <Box>
+                  <Typography>{sublocation.name}</Typography>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={isVisited(sublocation.id)}
+                        onChange={(event, checked) =>
+                          updateVisited(sublocation.id, checked)
+                        }
+                      />
                     }
+                    label={labelVisited(sublocation.id)}
                   />
-                }
-                label={
-                  isVisited(selectedLocation.id)
-                    ? `Visited on ${timestampVisited(
-                        selectedLocation.id
-                      ).toLocaleDateString()}`
-                    : 'Mark Visited'
-                }
-              />
+                </Box>
+              ))}
             </>
           ) : (
             <Typography>{campus}</Typography>
