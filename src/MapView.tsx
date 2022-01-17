@@ -11,12 +11,14 @@ import {
 } from '@mui/material'
 import { User } from 'firebase/auth'
 import {
+  getCampusInfo,
   getLocations,
   getUserVisited,
   setUserVisited,
   signInWithGooglePopup,
   signOutUser,
 } from './firebase'
+import { CampusInfo } from './CampusInfo'
 import { Location } from './Location'
 import { Visited } from './Visited'
 
@@ -41,6 +43,11 @@ export const MapView = ({ user }: MapViewProps) => {
   const [zoom] = useState<[number]>([14.5])
 
   const campus = 'cornell'
+
+  const [campusInfo, setCampusInfo] = useState<CampusInfo>()
+  useEffect(() => {
+    getCampusInfo(campus).then(campusInfo => setCampusInfo(campusInfo))
+  }, [campus])
 
   const [locations, setLocations] = useState<Location[]>([])
   useEffect(() => {
@@ -196,7 +203,7 @@ export const MapView = ({ user }: MapViewProps) => {
               ))}
             </>
           ) : (
-            <Typography>{campus}</Typography>
+            <Typography>{campusInfo?.name}</Typography>
           )}
         </Box>
         <Map

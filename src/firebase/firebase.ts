@@ -14,6 +14,7 @@ import {
   setDoc,
   getDoc,
 } from 'firebase/firestore'
+import { CampusInfo } from '../CampusInfo'
 import { Location } from '../Location'
 import { Visited } from '../Visited'
 
@@ -23,6 +24,12 @@ import firebaseConfig from './firebase.json'
 const app = initializeApp(firebaseConfig)
 export const auth = getAuth(app)
 export const db = getFirestore(app)
+
+export const getCampusInfo = async (campus: string): Promise<CampusInfo> => {
+  const campusDoc = doc(db, 'campuses', campus)
+  const campusSnapshot = await getDoc(campusDoc)
+  return campusSnapshot.data() as CampusInfo
+}
 
 export const getLocations = async (campus: string): Promise<Location[]> => {
   const locationCollection = collection(db, 'campuses', campus, 'locations')
