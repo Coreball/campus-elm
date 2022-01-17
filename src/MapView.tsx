@@ -12,6 +12,7 @@ import {
 import { User } from 'firebase/auth'
 import {
   getCampusInfo,
+  getCollections,
   getLocations,
   getUserVisited,
   setUserVisited,
@@ -19,6 +20,7 @@ import {
   signOutUser,
 } from './firebase'
 import { CampusInfo } from './CampusInfo'
+import { Collection } from './Collection'
 import { Location } from './Location'
 import { Visited } from './Visited'
 
@@ -54,6 +56,11 @@ export const MapView = ({ user }: MapViewProps) => {
     getLocations(campus).then(locations => setLocations(locations))
   }, [campus])
   // const locations: Location[] = require('./sample-locations.json')
+
+  const [collections, setCollections] = useState<Collection[]>([])
+  useEffect(() => {
+    getCollections(campus).then(collections => setCollections(collections))
+  }, [campus])
 
   const [visited, setVisited] = useState<Visited[]>([])
   useEffect(() => {
@@ -203,7 +210,17 @@ export const MapView = ({ user }: MapViewProps) => {
               ))}
             </>
           ) : (
-            <Typography>{campusInfo?.name}</Typography>
+            <>
+              <Typography>{campusInfo?.name}</Typography>
+              {collections.map(collection => (
+                <Box>
+                  <Typography>
+                    {collection.members.filter(id => isVisited(id)).length}/
+                    {collection.members.length} {collection.name}
+                  </Typography>
+                </Box>
+              ))}
+            </>
           )}
         </Box>
         <Map

@@ -15,6 +15,7 @@ import {
   getDoc,
 } from 'firebase/firestore'
 import { CampusInfo } from '../CampusInfo'
+import { Collection } from '../Collection'
 import { Location } from '../Location'
 import { Visited } from '../Visited'
 
@@ -40,6 +41,12 @@ export const getLocations = async (campus: string): Promise<Location[]> => {
       ...location,
       geoJson: JSON.parse(location.geoJson),
     })) as Location[]
+}
+
+export const getCollections = async (campus: string): Promise<Collection[]> => {
+  const collectionCollection = collection(db, 'campuses', campus, 'collections')
+  const collectionSnapshot = await getDocs(collectionCollection)
+  return collectionSnapshot.docs.map(doc => doc.data()) as Collection[]
 }
 
 const googleProvider = new GoogleAuthProvider()
