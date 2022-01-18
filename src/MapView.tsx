@@ -6,6 +6,8 @@ import {
   Button,
   Checkbox,
   FormControlLabel,
+  LinearProgress,
+  linearProgressClasses,
   Toolbar,
   Typography,
 } from '@mui/material'
@@ -98,6 +100,11 @@ export const MapView = ({ user }: MapViewProps) => {
       setUserVisited(user.uid, campus, newVisited)
     }
   }
+
+  const collectionProgress = (collection: Collection) =>
+    (collection.members.filter(id => isVisited(id)).length /
+      collection.members.length) *
+    100
 
   const unvisitedCollection = {
     type: 'FeatureCollection',
@@ -212,14 +219,34 @@ export const MapView = ({ user }: MapViewProps) => {
           ) : (
             <>
               <Typography>{campusInfo?.name}</Typography>
-              {collections.map(collection => (
-                <Box>
-                  <Typography>
-                    {collection.members.filter(id => isVisited(id)).length}/
-                    {collection.members.length} {collection.name}
-                  </Typography>
-                </Box>
-              ))}
+              {[...collections]
+                .sort((a, b) => collectionProgress(b) - collectionProgress(a))
+                .map(collection => (
+                  <Box sx={{ mt: 1 }}>
+                    <Typography>
+                      {collection.members.filter(id => isVisited(id)).length}/
+                      {collection.members.length} {collection.name}
+                    </Typography>
+                    <LinearProgress
+                      variant="determinate"
+                      value={collectionProgress(collection)}
+                      sx={{
+                        mt: 1,
+                        borderRadius: '3px',
+                        height: 6,
+                        [`&.${linearProgressClasses.colorPrimary}`]: theme => ({
+                          backgroundColor:
+                            theme.palette.grey[
+                              theme.palette.mode === 'light' ? 200 : 800
+                            ],
+                        }),
+                        [`& .${linearProgressClasses.bar}`]: {
+                          borderRadius: '3px',
+                        },
+                      }}
+                    />
+                  </Box>
+                ))}
             </>
           )}
         </Box>
