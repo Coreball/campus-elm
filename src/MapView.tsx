@@ -106,6 +106,15 @@ export const MapView = ({ user }: MapViewProps) => {
       collection.members.length) *
     100
 
+  const calculateScore = () => {
+    const locationScore = visited.length * 10
+    const collectionScore = collections
+      .filter(collection => collectionProgress(collection) === 100)
+      .map(collection => collection.score)
+      .reduce((a, b) => a + b, 0)
+    return locationScore + collectionScore
+  }
+
   const unvisitedCollection = {
     type: 'FeatureCollection',
     features: locations
@@ -183,9 +192,13 @@ export const MapView = ({ user }: MapViewProps) => {
         }}
       >
         <Box sx={{ width: 300, ml: 3, mr: 3 }}>
+          <Typography component="h2">{campusInfo?.name}</Typography>
+          <Typography>
+            <strong>{calculateScore()}</strong> Score
+          </Typography>
           {selectedLocation ? (
             <>
-              <Box>
+              <Box sx={{ mt: 1 }}>
                 <Typography>{selectedLocation.name}</Typography>
                 <FormControlLabel
                   control={
@@ -218,7 +231,6 @@ export const MapView = ({ user }: MapViewProps) => {
             </>
           ) : (
             <>
-              <Typography>{campusInfo?.name}</Typography>
               {[...collections]
                 .sort((a, b) => collectionProgress(b) - collectionProgress(a))
                 .map(collection => (
