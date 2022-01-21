@@ -11,6 +11,7 @@ import {
   Toolbar,
   Typography,
 } from '@mui/material'
+import CountUp from 'react-countup'
 import { User } from 'firebase/auth'
 import {
   getCampusInfo,
@@ -194,7 +195,15 @@ export const MapView = ({ user }: MapViewProps) => {
         <Box sx={{ width: 300, ml: 3, mr: 3 }}>
           <Typography component="h2">{campusInfo?.name}</Typography>
           <Typography>
-            <strong>{calculateScore()}</strong> Score
+            <strong>
+              <CountUp
+                end={calculateScore()}
+                duration={0.2}
+                preserveValue={true}
+                useEasing={false}
+              />
+            </strong>{' '}
+            Score
           </Typography>
           {selectedLocation ? (
             <>
