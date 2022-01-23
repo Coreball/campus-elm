@@ -6,9 +6,10 @@ import { Navigation } from './Navigation'
 interface ProfileProps {
   campus: string
   user: User | null
+  totalScore: number
 }
 
-export const Profile = ({ campus, user }: ProfileProps) => {
+export const Profile = ({ campus, user, totalScore }: ProfileProps) => {
   return (
     <Box>
       <Navigation campus={campus} user={user} />
@@ -33,7 +34,7 @@ export const Profile = ({ campus, user }: ProfileProps) => {
                   {user.displayName ?? 'Unknown'}
                 </Typography>
                 <Typography>
-                  <strong>???</strong> Score
+                  <strong>{totalScore}</strong> Score
                 </Typography>
                 {user.metadata.creationTime && (
                   <Typography>

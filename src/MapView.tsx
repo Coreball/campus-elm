@@ -11,13 +11,7 @@ import {
 } from '@mui/material'
 import CountUp from 'react-countup'
 import { User } from 'firebase/auth'
-import {
-  getCampusInfo,
-  getCollections,
-  getLocations,
-  getUserVisited,
-  setUserVisited,
-} from './firebase'
+import { getLocations } from './firebase'
 import { CampusInfo } from './CampusInfo'
 import { Collection } from './Collection'
 import { Location } from './Location'
@@ -36,39 +30,35 @@ const Map = styled(
 interface MapViewProps {
   campus: string
   user: User | null
+  totalScore: number
+  campusInfo?: CampusInfo
+  collections: Collection[]
+  visited: Visited[]
+  collectionProgress: (collection: Collection) => number
+  updateVisited: (id: string, checked: boolean) => void
 }
 
-export const MapView = ({ campus, user }: MapViewProps) => {
+export const MapView = ({
+  campus,
+  user,
+  totalScore,
+  campusInfo,
+  collections,
+  visited,
+  collectionProgress,
+  updateVisited,
+}: MapViewProps) => {
   const theme = useTheme()
 
   // Reference the same arrays to prevent re-centering on mapHandleClickRef update
   const [center] = useState<[number, number]>([-76.48, 42.45])
   const [zoom] = useState<[number]>([14.5])
 
-  const [campusInfo, setCampusInfo] = useState<CampusInfo>()
-  useEffect(() => {
-    getCampusInfo(campus).then(campusInfo => setCampusInfo(campusInfo))
-  }, [campus])
-
   const [locations, setLocations] = useState<Location[]>([])
   useEffect(() => {
     getLocations(campus).then(locations => setLocations(locations))
   }, [campus])
   // const locations: Location[] = require('./sample-locations.json')
-
-  const [collections, setCollections] = useState<Collection[]>([])
-  useEffect(() => {
-    getCollections(campus).then(collections => setCollections(collections))
-  }, [campus])
-
-  const [visited, setVisited] = useState<Visited[]>([])
-  useEffect(() => {
-    if (user) {
-      getUserVisited(user.uid, campus).then(visited => setVisited(visited))
-    } else {
-      setVisited([])
-    }
-  }, [user, campus])
 
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(
     null
@@ -86,30 +76,6 @@ export const MapView = ({ campus, user }: MapViewProps) => {
     return isVisited(id)
       ? `Visited on ${timestampVisited(id).toLocaleDateString()}`
       : 'Mark Visited'
-  }
-
-  const updateVisited = (id: string, checked: boolean) => {
-    const newVisited = checked
-      ? [...visited, { id, timestamp: new Date() }]
-      : visited.filter(visit => visit.id !== id)
-    setVisited(newVisited)
-    if (user) {
-      setUserVisited(user.uid, campus, newVisited)
-    }
-  }
-
-  const collectionProgress = (collection: Collection) =>
-    (collection.members.filter(id => isVisited(id)).length /
-      collection.members.length) *
-    100
-
-  const calculateScore = () => {
-    const locationScore = visited.length * 10
-    const collectionScore = collections
-      .filter(collection => collectionProgress(collection) === 100)
-      .map(collection => collection.score)
-      .reduce((a, b) => a + b, 0)
-    return locationScore + collectionScore
   }
 
   const unvisitedCollection = {
@@ -178,7 +144,7 @@ export const MapView = ({ campus, user }: MapViewProps) => {
           <Typography>
             <strong>
               <CountUp
-                end={calculateScore()}
+                end={totalScore}
                 duration={0.2}
                 preserveValue={true}
                 useEasing={false}
