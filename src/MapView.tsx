@@ -3,12 +3,10 @@ import ReactMapboxGl, { Layer, Source } from 'react-mapbox-gl'
 import { styled, useTheme } from '@mui/system'
 import {
   Box,
-  Button,
   Checkbox,
   FormControlLabel,
   LinearProgress,
   linearProgressClasses,
-  Toolbar,
   Typography,
 } from '@mui/material'
 import CountUp from 'react-countup'
@@ -19,13 +17,12 @@ import {
   getLocations,
   getUserVisited,
   setUserVisited,
-  signInWithGooglePopup,
-  signOutUser,
 } from './firebase'
 import { CampusInfo } from './CampusInfo'
 import { Collection } from './Collection'
 import { Location } from './Location'
 import { Visited } from './Visited'
+import { Navigation } from './Navigation'
 
 const Map = styled(
   ReactMapboxGl({
@@ -37,17 +34,16 @@ const Map = styled(
 )()
 
 interface MapViewProps {
+  campus: string
   user: User | null
 }
 
-export const MapView = ({ user }: MapViewProps) => {
+export const MapView = ({ campus, user }: MapViewProps) => {
   const theme = useTheme()
 
   // Reference the same arrays to prevent re-centering on mapHandleClickRef update
   const [center] = useState<[number, number]>([-76.48, 42.45])
   const [zoom] = useState<[number]>([14.5])
-
-  const campus = 'cornell'
 
   const [campusInfo, setCampusInfo] = useState<CampusInfo>()
   useEffect(() => {
@@ -169,22 +165,7 @@ export const MapView = ({ user }: MapViewProps) => {
         height: window.innerHeight,
       }}
     >
-      <Toolbar>
-        <Typography variant="h6" component="h1" sx={{ marginRight: 3 }}>
-          Campus Elm
-        </Typography>
-        <Box sx={{ flexGrow: 1, display: 'flex', gap: 1 }}>
-          <Button>{campus}</Button>
-          {user && <Button>{user.displayName}</Button>}
-        </Box>
-        {user ? (
-          <Button onClick={signOutUser}>Sign Out</Button>
-        ) : (
-          <Button variant="outlined" onClick={signInWithGooglePopup}>
-            Sign In
-          </Button>
-        )}
-      </Toolbar>
+      <Navigation campus={campus} user={user} />
       <Box
         sx={{
           display: 'flex',

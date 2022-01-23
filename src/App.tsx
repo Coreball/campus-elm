@@ -14,6 +14,7 @@ const theme = createTheme({
 })
 
 const App = () => {
+  const campus = 'cornell'
   const [user, setUser] = useState<User | null>(null)
 
   useEffect(() => {
@@ -27,8 +28,11 @@ const App = () => {
     <div className="App">
       <ThemeProvider theme={theme}>
         <Routes>
-          <Route path="profile" element={<Profile user={user} />} />
-          <Route path="/" element={<MapView user={user} />} />
+          <Route
+            path="profile"
+            element={<Profile campus={campus} user={user} />}
+          />
+          <Route path="/" element={<MapView campus={campus} user={user} />} />
         </Routes>
       </ThemeProvider>
     </div>
