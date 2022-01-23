@@ -2,8 +2,10 @@ import React, { useEffect, useState } from 'react'
 import { createTheme, ThemeProvider } from '@mui/material/styles'
 import { colors } from '@mui/material'
 import { onAuthStateChanged, User } from 'firebase/auth'
+import { Route, Routes } from 'react-router-dom'
 import { auth } from './firebase'
 import { MapView } from './MapView'
+import { Profile } from './Profile'
 
 const theme = createTheme({
   palette: {
@@ -24,7 +26,10 @@ const App = () => {
   return (
     <div className="App">
       <ThemeProvider theme={theme}>
-        <MapView user={user} />
+        <Routes>
+          <Route path="profile" element={<Profile user={user} />} />
+          <Route path="/" element={<MapView user={user} />} />
+        </Routes>
       </ThemeProvider>
     </div>
   )
