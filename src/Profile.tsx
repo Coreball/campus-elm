@@ -73,6 +73,7 @@ export const Profile = ({
                 gap: 2,
                 alignItems: 'center',
                 alignSelf: { xs: 'center', sm: 'auto' },
+                mt: 2,
               }}
             >
               <Avatar
@@ -95,12 +96,41 @@ export const Profile = ({
                 )}
               </Box>
             </Box>
-            {history.map(historyElement => (
-              <Box>
-                {historyElement.score} {historyElement.description}{' '}
-                {historyElement.timestamp.toLocaleDateString()}
-              </Box>
-            ))}
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 1,
+                mt: 4,
+                mb: 4,
+              }}
+            >
+              {history.map(historyElement => (
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    padding: 1.5,
+                    borderWidth: 1,
+                    borderStyle: 'solid',
+                    borderColor: 'success.light',
+                    borderRadius: 1,
+                  }}
+                >
+                  <Box sx={{ display: 'flex', gap: 2.5 }}>
+                    <Typography ml={1} color="success.main">
+                      <strong>+ {historyElement.score}</strong>
+                    </Typography>
+                    <Typography color="success.main">
+                      {historyElement.description}
+                    </Typography>
+                  </Box>
+                  <Typography mr={1} color="success.main">
+                    {historyElement.timestamp.toLocaleDateString()}
+                  </Typography>
+                </Box>
+              ))}
+            </Box>
           </>
         ) : (
           <Typography>Sign in to access your profile.</Typography>
