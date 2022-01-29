@@ -7,6 +7,7 @@ import {
   auth,
   getCampusInfo,
   getCollections,
+  getLocations,
   getUserVisited,
   setUserVisited,
 } from './firebase'
@@ -14,6 +15,7 @@ import { MapView } from './MapView'
 import { Profile } from './Profile'
 import { CampusInfo } from './CampusInfo'
 import { Collection } from './Collection'
+import { Location } from './Location'
 import { Visited } from './Visited'
 
 const theme = createTheme({
@@ -36,6 +38,11 @@ const App = () => {
   const [campusInfo, setCampusInfo] = useState<CampusInfo>()
   useEffect(() => {
     getCampusInfo(campus).then(campusInfo => setCampusInfo(campusInfo))
+  }, [campus])
+
+  const [locations, setLocations] = useState<Location[]>([])
+  useEffect(() => {
+    getLocations(campus).then(locations => setLocations(locations))
   }, [campus])
 
   const [collections, setCollections] = useState<Collection[]>([])
@@ -82,7 +89,15 @@ const App = () => {
           <Route
             path="profile"
             element={
-              <Profile campus={campus} user={user} totalScore={totalScore} />
+              <Profile
+                campus={campus}
+                user={user}
+                totalScore={totalScore}
+                locations={locations}
+                collections={collections}
+                collectionProgress={collectionProgress}
+                visited={visited}
+              />
             }
           />
           <Route
@@ -93,6 +108,7 @@ const App = () => {
                 user={user}
                 totalScore={totalScore}
                 campusInfo={campusInfo}
+                locations={locations}
                 collections={collections}
                 visited={visited}
                 collectionProgress={collectionProgress}

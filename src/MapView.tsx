@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useRef, useState } from 'react'
 import ReactMapboxGl, { Layer, Source } from 'react-mapbox-gl'
 import { styled, useTheme } from '@mui/system'
 import {
@@ -11,7 +11,6 @@ import {
 } from '@mui/material'
 import CountUp from 'react-countup'
 import { User } from 'firebase/auth'
-import { getLocations } from './firebase'
 import { CampusInfo } from './CampusInfo'
 import { Collection } from './Collection'
 import { Location } from './Location'
@@ -32,6 +31,7 @@ interface MapViewProps {
   user: User | null
   totalScore: number
   campusInfo?: CampusInfo
+  locations: Location[]
   collections: Collection[]
   visited: Visited[]
   collectionProgress: (collection: Collection) => number
@@ -43,6 +43,7 @@ export const MapView = ({
   user,
   totalScore,
   campusInfo,
+  locations,
   collections,
   visited,
   collectionProgress,
@@ -53,12 +54,6 @@ export const MapView = ({
   // Reference the same arrays to prevent re-centering on mapHandleClickRef update
   const [center] = useState<[number, number]>([-76.48, 42.45])
   const [zoom] = useState<[number]>([14.5])
-
-  const [locations, setLocations] = useState<Location[]>([])
-  useEffect(() => {
-    getLocations(campus).then(locations => setLocations(locations))
-  }, [campus])
-  // const locations: Location[] = require('./sample-locations.json')
 
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(
     null
